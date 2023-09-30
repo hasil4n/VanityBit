@@ -10,7 +10,7 @@ class VanityAddressGenerator:
 
     def __init__(self, root):
         self.root = root
-        self.root.title("Vanity Bitcoin Address Generator")
+        self.root.title("VanityBit")
 
         font_large = ("Arial", 16, "bold")
         font_medium = ("Arial", 12)
