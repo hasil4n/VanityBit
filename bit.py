@@ -58,7 +58,6 @@ class VanityAddressGenerator:
         self.attempts = 0
 
     def create_context_menu(self):
-        # Context menu for text boxes
         self.context_menu = Menu(self.root, tearoff=0)
         self.context_menu.add_command(label="Copy", command=self.copy_to_clipboard)
         self.address_display.bind("<Button-3>", self.show_context_menu)
@@ -68,9 +67,7 @@ class VanityAddressGenerator:
         self.context_menu.post(event.x_root, event.y_root)
 
     def copy_to_clipboard(self):
-        # Get the widget that triggered the context menu
         widget = self.root.focus_get()
-        # Get the selected text
         selected_text = widget.get("sel.first", "sel.last")
         self.root.clipboard_clear()
         self.root.clipboard_append(selected_text)
@@ -79,7 +76,7 @@ class VanityAddressGenerator:
         desired_prefix = self.entry.get()
         while not self.found.is_set():
             private_key = random_key()
-            wif_key = encode_privkey(private_key, 'wif')  # Convert to WIF format
+            wif_key = encode_privkey(private_key, 'wif')
             public_key = privtopub(private_key)
             address = pubtoaddr(public_key)
             self.attempts += 1
@@ -89,16 +86,14 @@ class VanityAddressGenerator:
                 self.address_display.delete(1.0, tk.END)
                 self.address_display.insert(tk.END, address)
                 self.private_key_display.delete(1.0, tk.END)
-                self.private_key_display.insert(tk.END, wif_key)  # Display the WIF private key
-                self.generate_button.config(state=tk.NORMAL)  # Enable the button again
+                self.private_key_display.insert(tk.END, wif_key)
+                self.generate_button.config(state=tk.NORMAL)
     
-                # ANSI escape code for yellow text
                 yellow = '\033[93m'
-                # ANSI escape code to end the color setting
                 end_color = '\033[0m'
                 
                 print(f"{yellow}[STOPPED]{end_color}\nAddress: {address}\nPrivate Key(WIF): {wif_key}\n")
-                sys.stdout.flush()  # Forces the print output to be displayed immediately
+                sys.stdout.flush()
 
     def monitor_hashrate(self):
         start_time = time.time()
@@ -108,7 +103,7 @@ class VanityAddressGenerator:
             elapsed_time = time.time() - start_time
             current_rate = self.attempts - start_attempts
             if self.found.is_set():
-                break  # Stop if vanity address is found
+                break
             print(f"\033[91m[RUNNING]\033[0m \033[92mTotal:{self.attempts}h, Time:{int(elapsed_time)}s, Speed:{current_rate}h/s\033[0m")
             sys.stdout.flush()
 
@@ -124,10 +119,8 @@ class VanityAddressGenerator:
             self.found.clear()
             self.attempts = 0
 
-            # Disable the generate button
             self.generate_button.config(state=tk.DISABLED)
 
-            # Start hashrate monitoring
             t = threading.Thread(target=self.monitor_hashrate)
             t.start()
 
@@ -136,7 +129,7 @@ class VanityAddressGenerator:
                 t.start()
         except ValueError:
             tk.messagebox.showerror("エラー", "無効なスレッド数です。正しい数値を入力してください。")
-            self.generate_button.config(state=tk.NORMAL)  # Enable the button in case of error
+            self.generate_button.config(state=tk.NORMAL)
 
 if __name__ == "__main__":
     root = tk.Tk()
